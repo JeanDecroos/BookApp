@@ -17,5 +17,9 @@ def get_books():
     books = response.json()
     return jsonify(books)
 
+@app.route('/progress')
+def progress():
+    return render_template('progress.html')
+
 if __name__ == '__main__':
     app.run(debug=True)

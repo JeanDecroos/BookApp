@@ -1,0 +1,65 @@
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/progress.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Progress</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        .progress-container {
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 30px;
+            width: 50%; /* Example progress */
+            background-color: #4caf50;
+            text-align: center;
+            line-height: 30px;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Progress Towards Your Goal</h1>
+    </header>
+    <main>
+        <div class="progress-container">
+            <h2>Your Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-bar-inner" id="progress-bar-inner">50%</div>
+            </div>
+        </div>
+    </main>
+    <script>
+        // Example script to update progress dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const progress = 75; // Example progress value
+            progressBarInner.style.width = progress + '%';
+            progressBarInner.textContent = progress + '%';
+        });
+    </script>
+</body>
+</html>
