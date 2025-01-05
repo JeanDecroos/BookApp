@@ -104,6 +104,7 @@
     <header id="header">
         <h1>BookApp</h1>
         <nav>
+            <a href="{{ url_for('main.index') }}" class="{% if request.endpoint == 'main.index' %}active{% endif %}">Home</a>
             <a href="{{ url_for('main.get_started') }}" class="{% if request.endpoint == 'main.get_started' %}active{% endif %}">Get Started</a>
             <a href="{{ url_for('books.reading_list') }}" class="{% if request.endpoint == 'books.reading_list' %}active{% endif %}">Reading List</a>
             <a href="{{ url_for('books.progress') }}" class="{% if request.endpoint == 'books.progress' %}active{% endif %}">Progress</a>
