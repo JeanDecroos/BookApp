@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Bok, your challenge{% endblock %}</title>
+    <title>{% block title %}BookApp{% endblock %}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
@@ -114,6 +114,7 @@
             <nav>
                 <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
                 <a href="{{ url_for('get_started') }}" class="{% if request.endpoint == 'get_started' %}active{% endif %}">Get Started</a>
+                <a href="{{ url_for('reading_list') }}" class="{% if request.endpoint == 'reading_list' %}active{% endif %}">Reading List</a>
                 <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </nav>
         </div>

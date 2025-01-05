@@ -4,37 +4,43 @@
 {% block title %}Get Started{% endblock %}
 
 {% block content %}
-<h2>Choose filters to get started:</h2>
-<label for="author">Choose an author:</label>
-<select id="author">
-    <option value="Roald Dahl">Roald Dahl</option>
-    <option value="J.K. Rowling">J.K. Rowling</option>
-    <option value="George Orwell">George Orwell</option>
-</select>
+<h2>Find some books you want to read:</h2>
+<div class="filters">
+    <label for="author">Choose an author:</label>
+    <select id="author" class="styled-select">
+        <option value="Roald Dahl">Roald Dahl</option>
+        <option value="J.K. Rowling">J.K. Rowling</option>
+        <option value="George Orwell">George Orwell</option>
+    </select>
 
-<label for="genre">Choose a genre:</label>
-<select id="genre">
-    <option value="Fantasy">Fantasy</option>
-    <option value="Science Fiction">Science Fiction</option>
-    <option value="Mystery">Mystery</option>
-</select>
+    <label for="genre">Choose a genre:</label>
+    <select id="genre" class="styled-select">
+        {% for genre in genres %}
+        <option value="{{ genre }}">{{ genre }}</option>
+        {% endfor %}
+    </select>
 
-<label for="book">Choose a book:</label>
-<select id="book">
-    <option value="Book 1">Book 1</option>
-    <option value="Book 2">Book 2</option>
-    <option value="Book 3">Book 3</option>
-</select>
+    <label for="language">Choose a language:</label>
+    <select id="language" class="styled-select">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+        <option value="it">Italian</option>
+        <!-- Add more languages as needed -->
+    </select>
 
-<button id="fetchBooks">Fetch Books</button>
-<div id="books"></div>
+    <button id="fetchBooks" class="styled-button">Let's Read</button>
+</div>
+<div id="books" class="books-grid"></div>
+<div id="confirmation" style="display: none; color: green; margin-top: 20px;">Book added to reading list!</div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('fetchBooks').addEventListener('click', () => {
             const author = document.getElementById('author').value;
             const genre = document.getElementById('genre').value;
-            const book = document.getElementById('book').value;
-            fetch(`/books?author=${encodeURIComponent(author)}&genre=${encodeURIComponent(genre)}&book=${encodeURIComponent(book)}`)
+            const language = document.getElementById('language').value;
+            fetch(`/books?author=${encodeURIComponent(author)}&genre=${encodeURIComponent(genre)}&langRestrict=${encodeURIComponent(language)}`)
                 .then(response => response.json())
                 .then(data => {
                     const booksDiv = document.getElementById('books');
@@ -44,15 +50,110 @@
                         const bookDiv = document.createElement('div');
                         bookDiv.classList.add('book');
                         bookDiv.innerHTML = `
+                            <img src="${book.imageLinks ? book.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=No+Image'}" alt="${book.title}">
                             <h2>${book.title}</h2>
                             <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
                             <p>Page Count: ${book.pageCount || 'N/A'}</p>
                             <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
+                            <button class="add-to-list" data-book='${JSON.stringify(book)}'>Add to Reading List</button>
                         `;
                         booksDiv.appendChild(bookDiv);
+                    });
+
+                    document.querySelectorAll('.add-to-list').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const book = JSON.parse(event.target.getAttribute('data-book'));
+                            fetch('/add_to_reading_list', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(book)
+                            }).then(response => response.json())
+                              .then(data => {
+                                  if (data.status === 'success') {
+                                      const confirmation = document.getElementById('confirmation');
+                                      confirmation.style.display = 'block';
+                                      setTimeout(() => {
+                                          confirmation.style.display = 'none';
+                                      }, 2000); // Hide the confirmation message after 2 seconds
+                                  }
+                              });
+                        });
                     });
                 });
         });
     });
 </script>
+<style>
+    .filters {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+    .books-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    .book {
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        text-align: center;
+        position: relative; /* Needed for absolute positioning of the button */
+        transition: transform 0.3s ease; /* Add transition for smooth transform */
+    }
+    .book:hover {
+        transform: scale(1.1); /* Enlarge the book on hover */
+    }
+    .book img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+    .styled-button {
+        padding: 10px 20px;
+        font-size: 1em;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 25px;
+        background-color: rgb(45, 59, 82); /* RGB color */
+        color: white;
+        border: none;
+        cursor: pointer;
+        transform: scale(0.9);
+    }
+    .styled-button:hover {
+        background-color: rgb(35, 49, 72); /* Darker RGB color */
+    }
+    .styled-select {
+        padding: 10px;
+        font-size: 1em;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        margin-bottom: 0;
+        width: auto;
+        box-sizing: border-box;
+    }
+    .add-to-list {
+        padding: 5px 10px;
+        font-size: 0.9em;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 5px;
+        background-color: rgb(45, 59, 82); /* RGB color */
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+        display: none; /* Hide the button initially */
+    }
+    .book:hover .add-to-list {
+        display: block; /* Show the button on hover */
+    }
+</style>
 {% endblock %}
