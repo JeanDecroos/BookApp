@@ -13,9 +13,38 @@
         <p>Author: {{ book.authors|join(', ') if book.authors else 'N/A' }}</p>
         <p>Page Count: {{ book.pageCount if book.pageCount else 'N/A' }}</p>
         <p>ISBN: {{ book.industryIdentifiers[0].identifier if book.industryIdentifiers else 'N/A' }}</p>
+        <input type="number" class="pages-read" placeholder="Pages read" data-book-id="{{ book.industryIdentifiers[0].identifier if book.industryIdentifiers else 'N/A' }}">
+        <button class="save-progress" data-book-id="{{ book.industryIdentifiers[0].identifier if book.industryIdentifiers else 'N/A' }}">Save Progress</button>
     </div>
     {% endfor %}
 </div>
+<div id="confirmation" class="confirmation">Progress saved!</div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.save-progress').forEach(button => {
+            button.addEventListener('click', (event) => {
+                const bookId = event.target.getAttribute('data-book-id');
+                const pagesRead = document.querySelector(`.pages-read[data-book-id="${bookId}"]`).value;
+                fetch('/save_progress', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ bookId, pagesRead })
+                }).then(response => response.json())
+                  .then(data => {
+                      if (data.status === 'success') {
+                          const confirmation = document.getElementById('confirmation');
+                          confirmation.classList.add('visible');
+                          setTimeout(() => {
+                              confirmation.classList.remove('visible');
+                          }, 2000); // Hide the confirmation message after 2 seconds
+                      }
+                  });
+            });
+        });
+    });
+</script>
 <style>
     .books-grid {
         display: grid;
@@ -33,6 +62,44 @@
         max-width: 100%;
         height: auto;
         margin-bottom: 10px;
+    }
+    .pages-read {
+        margin-top: 10px;
+        padding: 5px;
+        font-size: 1em;
+        width: 80%;
+    }
+    .save-progress {
+        padding: 5px 10px;
+        font-size: 0.9em;
+        font-family: 'Roboto', sans-serif;
+        border-radius: 5px;
+        background-color: rgb(45, 59, 82); /* RGB color */
+        color: white;
+        border: none;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .save-progress:hover {
+        background-color: rgb(35, 49, 72); /* Darker RGB color */
+    }
+    .confirmation {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 128, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        font-size: 1.2em;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        z-index: 1000;
+    }
+    .confirmation.visible {
+        opacity: 1;
     }
 </style>
 {% endblock %}

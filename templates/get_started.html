@@ -33,7 +33,8 @@
     <button id="fetchBooks" class="styled-button">Let's Read</button>
 </div>
 <div id="books" class="books-grid"></div>
-<div id="confirmation" style="display: none; color: green; margin-top: 20px;">Book added to reading list!</div>
+<div id="confirmation" class="confirmation">Book added to reading list!</div>
+<div id="error" class="confirmation" style="background-color: rgba(255, 0, 0, 0.8);">Book already in reading list!</div>
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('fetchBooks').addEventListener('click', () => {
@@ -71,12 +72,18 @@
                                 body: JSON.stringify(book)
                             }).then(response => response.json())
                               .then(data => {
+                                  const confirmation = document.getElementById('confirmation');
+                                  const error = document.getElementById('error');
                                   if (data.status === 'success') {
-                                      const confirmation = document.getElementById('confirmation');
-                                      confirmation.style.display = 'block';
+                                      confirmation.classList.add('visible');
                                       setTimeout(() => {
-                                          confirmation.style.display = 'none';
+                                          confirmation.classList.remove('visible');
                                       }, 2000); // Hide the confirmation message after 2 seconds
+                                  } else if (data.status === 'error') {
+                                      error.classList.add('visible');
+                                      setTimeout(() => {
+                                          error.classList.remove('visible');
+                                      }, 2000); // Hide the error message after 2 seconds
                                   }
                               });
                         });
@@ -154,6 +161,24 @@
     }
     .book:hover .add-to-list {
         display: block; /* Show the button on hover */
+    }
+    .confirmation {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(0, 128, 0, 0.8);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        font-size: 1.2em;
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        z-index: 1000;
+    }
+    .confirmation.visible {
+        opacity: 1;
     }
 </style>
 {% endblock %}

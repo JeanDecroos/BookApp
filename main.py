@@ -47,8 +47,25 @@ def add_to_reading_list():
     book = request.json
     if 'reading_list' not in session:
         session['reading_list'] = []
+    # Check if the book is already in the reading list
+    for existing_book in session['reading_list']:
+        if existing_book['industryIdentifiers'][0]['identifier'] == book['industryIdentifiers'][0]['identifier']:
+            return jsonify({'status': 'error', 'message': 'Book already in reading list'})
+    book['pagesRead'] = 0  # Initialize pagesRead to 0
     session['reading_list'].append(book)
     session.modified = True  # Ensure the session is marked as modified
+    return jsonify({'status': 'success'})
+
+@app.route('/save_progress', methods=['POST'])
+def save_progress():
+    data = request.json
+    book_id = data['bookId']
+    pages_read = int(data['pagesRead'])
+    for book in session.get('reading_list', []):
+        if book['industryIdentifiers'][0]['identifier'] == book_id:
+            book['pagesRead'] = pages_read
+            break
+    session.modified = True
     return jsonify({'status': 'success'})
 
 @app.route('/reading_list')
@@ -59,7 +76,8 @@ def reading_list():
 
 @app.route('/progress')
 def progress():
-    return render_template('progress.html')
+    reading_list = session.get('reading_list', [])
+    return render_template('progress.html', reading_list=reading_list)
 
 if __name__ == '__main__':
     app.run(debug=True)
