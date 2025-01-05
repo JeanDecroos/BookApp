@@ -8,9 +8,9 @@
 <div class="filters">
     <label for="author">Choose an author:</label>
     <select id="author" class="styled-select">
-        <option value="Roald Dahl">Roald Dahl</option>
-        <option value="J.K. Rowling">J.K. Rowling</option>
-        <option value="George Orwell">George Orwell</option>
+        {% for author in authors %}
+        <option value="{{ author }}">{{ author }}</option>
+        {% endfor %}
     </select>
 
     <label for="genre">Choose a genre:</label>
@@ -32,7 +32,18 @@
 
     <button id="fetchBooks" class="styled-button">Let's Read</button>
 </div>
-<div id="books" class="books-grid"></div>
+<div id="books" class="books-grid">
+    {% for book in books %}
+    <div class="book">
+        <img src="{{ book.volumeInfo.imageLinks.thumbnail if book.volumeInfo.imageLinks else 'https://via.placeholder.com/128x192?text=No+Image' }}" alt="{{ book.volumeInfo.title }}">
+        <h2>{{ book.volumeInfo.title }}</h2>
+        <p>Author: {{ book.volumeInfo.authors | join(', ') if book.volumeInfo.authors else 'N/A' }}</p>
+        <p>Page Count: {{ book.volumeInfo.pageCount if book.volumeInfo.pageCount else 'N/A' }}</p>
+        <p>ISBN: {{ book.volumeInfo.industryIdentifiers[0].identifier if book.volumeInfo.industryIdentifiers else 'N/A' }}</p>
+        <button class="add-to-list" data-book='{{ book | tojson }}'>Add to Reading List</button>
+    </div>
+    {% endfor %}
+</div>
 <div id="confirmation" class="confirmation">Book added to reading list!</div>
 <div id="error" class="confirmation" style="background-color: rgba(255, 0, 0, 0.8);">Book already in reading list!</div>
 <script>
@@ -41,7 +52,7 @@
             const author = document.getElementById('author').value;
             const genre = document.getElementById('genre').value;
             const language = document.getElementById('language').value;
-            fetch(`/books?author=${encodeURIComponent(author)}&genre=${encodeURIComponent(genre)}&langRestrict=${encodeURIComponent(language)}`)
+            fetch(`/get_books?author=${encodeURIComponent(author)}&genre=${encodeURIComponent(genre)}&langRestrict=${encodeURIComponent(language)}`)
                 .then(response => response.json())
                 .then(data => {
                     const booksDiv = document.getElementById('books');
@@ -93,6 +104,11 @@
     });
 </script>
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Futura:wght@400;700&display=swap');
+
+    body {
+        font-family: 'Futura', sans-serif;
+    }
     .filters {
         display: flex;
         align-items: center;
@@ -126,7 +142,7 @@
     .styled-button {
         padding: 10px 20px;
         font-size: 1em;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Futura', sans-serif;
         border-radius: 25px;
         background-color: rgb(45, 59, 82); /* RGB color */
         color: white;
@@ -140,7 +156,7 @@
     .styled-select {
         padding: 10px;
         font-size: 1em;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Futura', sans-serif;
         border-radius: 5px;
         border: 1px solid #ccc;
         margin-bottom: 0;
@@ -150,7 +166,7 @@
     .add-to-list {
         padding: 5px 10px;
         font-size: 0.9em;
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Futura', sans-serif;
         border-radius: 5px;
         background-color: rgb(45, 59, 82); /* RGB color */
         color: white;

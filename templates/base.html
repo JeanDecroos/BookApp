@@ -6,11 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}BookApp{% endblock %}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Futura:wght@400;700&display=swap');
         
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Futura', sans-serif;
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
@@ -42,15 +41,11 @@
             width: 100%;
             top: 0;
             left: 0;
-            transition: opacity 0.5s;
             z-index: 1000; /* Ensure the header is above other content */
             box-sizing: border-box;
         }
-        header img {
-            height: 100px;
-        }
         header h1 {
-            font-family: 'Comic Neue', cursive;
+            font-family: 'Futura', sans-serif;
             font-size: 2.5em;
             margin: 0;
             padding-left: 20px;
@@ -85,7 +80,7 @@
             transition: opacity 2s, transform 0.3s;
             padding: 15px 30px;
             font-size: 1.5em;
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Futura', sans-serif;
             border-radius: 25px;
             background-color: rgb(45, 59, 82); /* RGB color */
             color: white;
@@ -107,17 +102,12 @@
 </head>
 <body>
     <header id="header">
-        <div style="display: flex; align-items: center;">
-            <a href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
-            </a>
-            <nav>
-                <a href="{{ url_for('get_started') }}" class="{% if request.endpoint == 'get_started' %}active{% endif %}">Get Started</a>
-                <a href="{{ url_for('reading_list') }}" class="{% if request.endpoint == 'reading_list' %}active{% endif %}">Reading List</a>
-                <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
-            </nav>
-        </div>
-        <h1>Bok, your challenge</h1>
+        <h1>BookApp</h1>
+        <nav>
+            <a href="{{ url_for('main.get_started') }}" class="{% if request.endpoint == 'main.get_started' %}active{% endif %}">Get Started</a>
+            <a href="{{ url_for('books.reading_list') }}" class="{% if request.endpoint == 'books.reading_list' %}active{% endif %}">Reading List</a>
+            <a href="{{ url_for('books.progress') }}" class="{% if request.endpoint == 'books.progress' %}active{% endif %}">Progress</a>
+        </nav>
     </header>
     <main>
         {% block content %}{% endblock %}
