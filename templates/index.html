@@ -5,13 +5,19 @@
 
 {% block content %}
 <h2>Welcome to BookApp</h2>
-<button id="startButton" class="fade-in-button" onclick="location.href='{{ url_for('get_started') }}'">Let's get started</button>
+<button id="startButton" class="fade-in-button" onclick="window.location.href='/get_started'">Let's get started</button>
+{% endblock %}
+
+{% block extra_scripts %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const startButton = document.getElementById('startButton');
-        setTimeout(() => {
-            startButton.classList.add('visible');
-        }, 1000); // Adjust the delay as needed
-    });
+    function loadSubpage(page) {
+        fetch(`/${page}`)
+            .then(response => response.text())
+            .then(html => {
+                const dynamicContent = document.getElementById('dynamic-content');
+                dynamicContent.innerHTML += html;
+            })
+            .catch(error => console.error('Error loading subpage:', error));
+    }
 </script>
 {% endblock %}

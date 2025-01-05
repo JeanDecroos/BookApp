@@ -7,6 +7,7 @@
     <title>{% block title %}Bok, your challenge{% endblock %}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap');
         
         body {
             font-family: Arial, sans-serif;
@@ -31,7 +32,7 @@
             background-color: rgba(0, 0, 0, 0.5); /* Chrome, Safari */
         }
         header {
-            background-color: #333;
+            background-color: rgb(45, 59, 82); /* RGB color */
             color: #fff;
             padding: 20px;
             display: flex;
@@ -79,6 +80,29 @@
             color: #fff;
             margin: 0;
         }
+        .fade-in-button {
+            opacity: 0;
+            transition: opacity 2s, transform 0.3s;
+            padding: 15px 30px;
+            font-size: 1.5em;
+            font-family: 'Roboto', sans-serif;
+            border-radius: 25px;
+            background-color: rgb(45, 59, 82); /* RGB color */
+            color: white;
+            border: none;
+            cursor: pointer;
+            transform: scale(0.9);
+        }
+        .fade-in-button.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .fade-in-button:hover {
+            background-color: rgb(35, 49, 72); /* Darker RGB color */
+        }
+        #dynamic-content {
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -96,6 +120,7 @@
     </header>
     <main>
         {% block content %}{% endblock %}
+        <div id="dynamic-content"></div>
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -106,6 +131,13 @@
                 const opacity = Math.max(0, 1 - scrollPosition / maxScroll);
                 header.style.opacity = opacity;
             });
+
+            const startButton = document.getElementById('startButton');
+            if (startButton) {
+                setTimeout(() => {
+                    startButton.classList.add('visible');
+                }, 1000); // Adjust the delay as needed
+            }
         });
     </script>
 </body>
