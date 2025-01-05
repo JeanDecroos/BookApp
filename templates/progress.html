@@ -1,10 +1,10 @@
-<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/index.html -->
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/progress.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bok, your challenge</title>
+    <title>Progress</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
         
@@ -13,22 +13,6 @@
             background-color: #f4f4f4;
             margin: 0;
             padding: 0;
-            overflow-y: scroll; /* Always show vertical scrollbar */
-            scrollbar-width: thin; /* Firefox */
-            scrollbar-color: transparent transparent; /* Firefox */
-        }
-        body::-webkit-scrollbar {
-            width: 0.5em; /* Chrome, Safari */
-        }
-        body::-webkit-scrollbar-track {
-            background: transparent; /* Chrome, Safari */
-        }
-        body::-webkit-scrollbar-thumb {
-            background-color: transparent; /* Chrome, Safari */
-            border-radius: 10px;
-        }
-        body:hover::-webkit-scrollbar-thumb {
-            background-color: rgba(0, 0, 0, 0.5); /* Chrome, Safari */
         }
         header {
             background-color: #333;
@@ -73,18 +57,23 @@
         }
         main {
             padding: 140px 20px 20px; /* Add padding-top to avoid content being hidden behind the fixed header */
+        }
+        .progress-container {
+            margin-top: 20px;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar-inner {
+            height: 30px;
+            width: 50%; /* Example progress */
+            background-color: #4caf50;
             text-align: center;
-        }
-        h1 {
-            color: #fff;
-            margin: 0;
-        }
-        .fade-in-button {
-            opacity: 0;
-            transition: opacity 2s;
-        }
-        .fade-in-button.visible {
-            opacity: 1;
+            line-height: 30px;
+            color: white;
         }
     </style>
 </head>
@@ -95,29 +84,27 @@
                 <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
             </a>
             <nav>
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
                 <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </nav>
         </div>
         <h1>Bok, your challenge</h1>
     </header>
     <main>
-        <h2>Welcome to BookApp</h2>
-        <button id="startButton" class="fade-in-button" onclick="location.href='{{ url_for('get_started') }}'">Let's get started</button>
+        <div class="progress-container">
+            <h2>Your Progress</h2>
+            <div class="progress-bar">
+                <div class="progress-bar-inner" id="progress-bar-inner">50%</div>
+            </div>
+        </div>
     </main>
     <script>
+        // Example script to update progress dynamically
         document.addEventListener('DOMContentLoaded', () => {
-            const startButton = document.getElementById('startButton');
-            setTimeout(() => {
-                startButton.classList.add('visible');
-            }, 1000); // Adjust the delay as needed
-
-            window.addEventListener('scroll', () => {
-                const header = document.getElementById('header');
-                const scrollPosition = window.scrollY;
-                const maxScroll = 200; // Adjust this value as needed
-                const opacity = Math.max(0, 1 - scrollPosition / maxScroll);
-                header.style.opacity = opacity;
-            });
+            const progressBarInner = document.getElementById('progress-bar-inner');
+            const progress = 75; // Example progress value
+            progressBarInner.style.width = progress + '%';
+            progressBarInner.textContent = progress + '%';
         });
     </script>
 </body>

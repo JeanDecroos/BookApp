@@ -1,10 +1,10 @@
-<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/index.html -->
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/get_started.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bok, your challenge</title>
+    <title>Let's get started</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
         
@@ -79,12 +79,27 @@
             color: #fff;
             margin: 0;
         }
-        .fade-in-button {
-            opacity: 0;
-            transition: opacity 2s;
+        label, select, button {
+            display: block;
+            margin: 10px auto;
+            max-width: 300px;
         }
-        .fade-in-button.visible {
-            opacity: 1;
+        #books {
+            margin-top: 20px;
+        }
+        .book {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .book h2 {
+            margin: 0;
+            color: #333;
+        }
+        .book p {
+            margin: 5px 0;
         }
     </style>
 </head>
@@ -95,21 +110,46 @@
                 <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
             </a>
             <nav>
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Let's get started</a>
                 <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </nav>
         </div>
         <h1>Bok, your challenge</h1>
     </header>
     <main>
-        <h2>Welcome to BookApp</h2>
-        <button id="startButton" class="fade-in-button" onclick="location.href='{{ url_for('get_started') }}'">Let's get started</button>
+        <h2>Choose an author to get started:</h2>
+        <label for="author">Choose an author:</label>
+        <select id="author">
+            <option value="Roald Dahl">Roald Dahl</option>
+            <option value="J.K. Rowling">J.K. Rowling</option>
+            <option value="George Orwell">George Orwell</option>
+        </select>
+        <button id="fetchBooks">Fetch Books</button>
+        <div id="books"></div>
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const startButton = document.getElementById('startButton');
-            setTimeout(() => {
-                startButton.classList.add('visible');
-            }, 1000); // Adjust the delay as needed
+            document.getElementById('fetchBooks').addEventListener('click', () => {
+                const author = document.getElementById('author').value;
+                fetch(`/books?author=${encodeURIComponent(author)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const booksDiv = document.getElementById('books');
+                        booksDiv.innerHTML = ''; // Clear previous results
+                        data.items.forEach(item => {
+                            const book = item.volumeInfo;
+                            const bookDiv = document.createElement('div');
+                            bookDiv.classList.add('book');
+                            bookDiv.innerHTML = `
+                                <h2>${book.title}</h2>
+                                <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
+                                <p>Page Count: ${book.pageCount || 'N/A'}</p>
+                                <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
+                            `;
+                            booksDiv.appendChild(bookDiv);
+                        });
+                    });
+            });
 
             window.addEventListener('scroll', () => {
                 const header = document.getElementById('header');

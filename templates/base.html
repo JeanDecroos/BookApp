@@ -1,10 +1,10 @@
-<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/index.html -->
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bok, your challenge</title>
+    <title>{% block title %}Bok, your challenge{% endblock %}</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
         
@@ -79,13 +79,6 @@
             color: #fff;
             margin: 0;
         }
-        .fade-in-button {
-            opacity: 0;
-            transition: opacity 2s;
-        }
-        .fade-in-button.visible {
-            opacity: 1;
-        }
     </style>
 </head>
 <body>
@@ -95,22 +88,17 @@
                 <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
             </a>
             <nav>
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Let's get started</a>
                 <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </nav>
         </div>
         <h1>Bok, your challenge</h1>
     </header>
     <main>
-        <h2>Welcome to BookApp</h2>
-        <button id="startButton" class="fade-in-button" onclick="location.href='{{ url_for('get_started') }}'">Let's get started</button>
+        {% block content %}{% endblock %}
     </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const startButton = document.getElementById('startButton');
-            setTimeout(() => {
-                startButton.classList.add('visible');
-            }, 1000); // Adjust the delay as needed
-
             window.addEventListener('scroll', () => {
                 const header = document.getElementById('header');
                 const scrollPosition = window.scrollY;

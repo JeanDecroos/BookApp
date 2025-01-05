@@ -8,6 +8,10 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
+@app.route('/get_started')
+def get_started():
+    return render_template('get_started.html')
+
 @app.route('/books')
 def get_books():
     api_key = 'AIzaSyC5nqaKrpbREFeCdAAEjqOQtkckLUaUc5c'
