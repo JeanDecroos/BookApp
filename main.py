@@ -14,7 +14,10 @@ def get_started():
 def get_books():
     api_key = 'AIzaSyC5nqaKrpbREFeCdAAEjqOQtkckLUaUc5c'
     author = request.args.get('author', 'Roald Dahl')
-    url = f'https://www.googleapis.com/books/v1/volumes?q={author}&key={api_key}'
+    genre = request.args.get('genre', '')
+    book = request.args.get('book', '')
+    query = f'{author}+{genre}+{book}'
+    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}'
     response = requests.get(url)
     books = response.json()
     return jsonify(books)

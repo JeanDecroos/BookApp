@@ -112,7 +112,8 @@
                 <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
             </a>
             <nav>
-                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Let's get started</a>
+                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
+                <a href="{{ url_for('get_started') }}" class="{% if request.endpoint == 'get_started' %}active{% endif %}">Get Started</a>
                 <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
             </nav>
         </div>
