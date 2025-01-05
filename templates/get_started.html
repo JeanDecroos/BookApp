@@ -1,0 +1,41 @@
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/get_started.html -->
+{% extends "base.html" %}
+
+{% block title %}Let's get started{% endblock %}
+
+{% block content %}
+<h2>Choose an author to get started:</h2>
+<label for="author">Choose an author:</label>
+<select id="author">
+    <option value="Roald Dahl">Roald Dahl</option>
+    <option value="J.K. Rowling">J.K. Rowling</option>
+    <option value="George Orwell">George Orwell</option>
+</select>
+<button id="fetchBooks">Fetch Books</button>
+<div id="books"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('fetchBooks').addEventListener('click', () => {
+            const author = document.getElementById('author').value;
+            fetch(`/books?author=${encodeURIComponent(author)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const booksDiv = document.getElementById('books');
+                    booksDiv.innerHTML = ''; // Clear previous results
+                    data.items.forEach(item => {
+                        const book = item.volumeInfo;
+                        const bookDiv = document.createElement('div');
+                        bookDiv.classList.add('book');
+                        bookDiv.innerHTML = `
+                            <h2>${book.title}</h2>
+                            <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
+                            <p>Page Count: ${book.pageCount || 'N/A'}</p>
+                            <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
+                        `;
+                        booksDiv.appendChild(bookDiv);
+                    });
+                });
+        });
+    });
+</script>
+{% endblock %}

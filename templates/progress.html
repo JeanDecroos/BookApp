@@ -1,111 +1,22 @@
 <!-- filepath: /c:/Users/decroosb/Downloads/BookApp/templates/progress.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Progress</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap');
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            transition: opacity 0.5s;
-            z-index: 1000; /* Ensure the header is above other content */
-            box-sizing: border-box;
-        }
-        header img {
-            height: 100px;
-        }
-        header h1 {
-            font-family: 'Comic Neue', cursive;
-            font-size: 2.5em;
-            margin: 0;
-            padding-left: 20px;
-            white-space: nowrap; /* Prevent text from wrapping */
-            overflow: hidden; /* Hide overflow text */
-            text-overflow: ellipsis; /* Add ellipsis for overflow text */
-        }
-        header nav {
-            display: flex;
-            align-items: center;
-        }
-        header nav a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 20px;
-            font-size: 1.2em;
-        }
-        header nav a.active {
-            font-weight: bold;
-            text-decoration: underline;
-        }
-        main {
-            padding: 140px 20px 20px; /* Add padding-top to avoid content being hidden behind the fixed header */
-        }
-        .progress-container {
-            margin-top: 20px;
-        }
-        .progress-bar {
-            width: 100%;
-            background-color: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-        }
-        .progress-bar-inner {
-            height: 30px;
-            width: 50%; /* Example progress */
-            background-color: #4caf50;
-            text-align: center;
-            line-height: 30px;
-            color: white;
-        }
-    </style>
-</head>
-<body>
-    <header id="header">
-        <div style="display: flex; align-items: center;">
-            <a href="{{ url_for('index') }}">
-                <img src="{{ url_for('static', filename='bookappLogo.PNG') }}" alt="BookApp Logo">
-            </a>
-            <nav>
-                <a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</a>
-                <a href="{{ url_for('progress') }}" class="{% if request.endpoint == 'progress' %}active{% endif %}">Progress</a>
-            </nav>
-        </div>
-        <h1>Bok, your challenge</h1>
-    </header>
-    <main>
-        <div class="progress-container">
-            <h2>Your Progress</h2>
-            <div class="progress-bar">
-                <div class="progress-bar-inner" id="progress-bar-inner">50%</div>
-            </div>
-        </div>
-    </main>
-    <script>
-        // Example script to update progress dynamically
-        document.addEventListener('DOMContentLoaded', () => {
-            const progressBarInner = document.getElementById('progress-bar-inner');
-            const progress = 75; // Example progress value
-            progressBarInner.style.width = progress + '%';
-            progressBarInner.textContent = progress + '%';
-        });
-    </script>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Progress{% endblock %}
+
+{% block content %}
+<div class="progress-container">
+    <h2>Your Progress</h2>
+    <div class="progress-bar">
+        <div class="progress-bar-inner" id="progress-bar-inner">50%</div>
+    </div>
+</div>
+<script>
+    // Example script to update progress dynamically
+    document.addEventListener('DOMContentLoaded', () => {
+        const progressBarInner = document.getElementById('progress-bar-inner');
+        const progress = 75; // Example progress value
+        progressBarInner.style.width = progress + '%';
+        progressBarInner.textContent = progress + '%';
+    });
+</script>
+{% endblock %}
