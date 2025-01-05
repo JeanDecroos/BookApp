@@ -8,6 +8,7 @@
 <div class="filters">
     <label for="author">Choose an author:</label>
     <select id="author" class="styled-select">
+        <option value="all">All Authors</option>
         {% for author in authors %}
         <option value="{{ author }}">{{ author }}</option>
         {% endfor %}
@@ -15,6 +16,7 @@
 
     <label for="genre">Choose a genre:</label>
     <select id="genre" class="styled-select">
+        <option value="all">All Genres</option>
         {% for genre in genres %}
         <option value="{{ genre }}">{{ genre }}</option>
         {% endfor %}
@@ -22,6 +24,7 @@
 
     <label for="language">Choose a language:</label>
     <select id="language" class="styled-select">
+        <option value="all">All Languages</option>
         <option value="en">English</option>
         <option value="es">Spanish</option>
         <option value="fr">French</option>
@@ -57,48 +60,56 @@
                 .then(data => {
                     const booksDiv = document.getElementById('books');
                     booksDiv.innerHTML = ''; // Clear previous results
-                    data.items.forEach(item => {
-                        const book = item.volumeInfo;
-                        const bookDiv = document.createElement('div');
-                        bookDiv.classList.add('book');
-                        bookDiv.innerHTML = `
-                            <img src="${book.imageLinks ? book.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=No+Image'}" alt="${book.title}">
-                            <h2>${book.title}</h2>
-                            <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
-                            <p>Page Count: ${book.pageCount || 'N/A'}</p>
-                            <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
-                            <button class="add-to-list" data-book='${JSON.stringify(book)}'>Add to Reading List</button>
-                        `;
-                        booksDiv.appendChild(bookDiv);
-                    });
-
-                    document.querySelectorAll('.add-to-list').forEach(button => {
-                        button.addEventListener('click', (event) => {
-                            const book = JSON.parse(event.target.getAttribute('data-book'));
-                            fetch('/add_to_reading_list', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(book)
-                            }).then(response => response.json())
-                              .then(data => {
-                                  const confirmation = document.getElementById('confirmation');
-                                  const error = document.getElementById('error');
-                                  if (data.status === 'success') {
-                                      confirmation.classList.add('visible');
-                                      setTimeout(() => {
-                                          confirmation.classList.remove('visible');
-                                      }, 2000); // Hide the confirmation message after 2 seconds
-                                  } else if (data.status === 'error') {
-                                      error.classList.add('visible');
-                                      setTimeout(() => {
-                                          error.classList.remove('visible');
-                                      }, 2000); // Hide the error message after 2 seconds
-                                  }
-                              });
+                    if (data.items) {
+                        data.items.forEach(item => {
+                            const book = item.volumeInfo;
+                            const bookDiv = document.createElement('div');
+                            bookDiv.classList.add('book');
+                            bookDiv.innerHTML = `
+                                <img src="${book.imageLinks ? book.imageLinks.thumbnail : 'https://via.placeholder.com/128x192?text=No+Image'}" alt="${book.title}">
+                                <h2>${book.title}</h2>
+                                <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
+                                <p>Page Count: ${book.pageCount || 'N/A'}</p>
+                                <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
+                                <button class="add-to-list" data-book='${JSON.stringify(book)}'>Add to Reading List</button>
+                            `;
+                            booksDiv.appendChild(bookDiv);
                         });
-                    });
+
+                        document.querySelectorAll('.add-to-list').forEach(button => {
+                            button.addEventListener('click', (event) => {
+                                const book = JSON.parse(event.target.getAttribute('data-book'));
+                                fetch('/add_to_reading_list', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify(book)
+                                }).then(response => response.json())
+                                  .then(data => {
+                                      const confirmation = document.getElementById('confirmation');
+                                      const error = document.getElementById('error');
+                                      if (data.status === 'success') {
+                                          confirmation.classList.add('visible');
+                                          setTimeout(() => {
+                                              confirmation.classList.remove('visible');
+                                          }, 2000); // Hide the confirmation message after 2 seconds
+                                      } else if (data.status === 'error') {
+                                          error.classList.add('visible');
+                                          setTimeout(() => {
+                                              error.classList.remove('visible');
+                                          }, 2000); // Hide the error message after 2 seconds
+                                      }
+                                  }).catch(error => {
+                                      console.error('Error:', error);
+                                  });
+                            });
+                        });
+                    } else {
+                        booksDiv.innerHTML = '<p>No books found.</p>';
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
                 });
         });
     });

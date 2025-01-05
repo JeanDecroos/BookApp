@@ -5,6 +5,32 @@ import os
 main_routes = Blueprint('main', __name__)
 book_routes = Blueprint('books', __name__)
 
+def fetch_authors():
+    url = "https://www.googleapis.com/books/v1/volumes?q=*&maxResults=40"
+    response = requests.get(url)
+    data = response.json()
+    
+    authors = set()
+    for item in data.get('items', []):
+        volume_info = item.get('volumeInfo', {})
+        authors_list = volume_info.get('authors', [])
+        authors.update(authors_list)
+    
+    return list(authors)[:2]  # Limit to 2 authors
+
+def fetch_genres():
+    url = "https://www.googleapis.com/books/v1/volumes?q=*&maxResults=40"
+    response = requests.get(url)
+    data = response.json()
+    
+    genres = set()
+    for item in data.get('items', []):
+        volume_info = item.get('volumeInfo', {})
+        categories = volume_info.get('categories', [])
+        genres.update(categories)
+    
+    return list(genres)[:1]  # Limit to 1 genre
+
 @main_routes.route('/')
 def index():
     return render_template('index.html')
@@ -12,22 +38,16 @@ def index():
 @main_routes.route('/get_started')
 def get_started():
     api_key = os.getenv('GOOGLE_BOOKS_API_KEY')
-    url = f'https://www.googleapis.com/books/v1/volumes?q=subject:fiction&key={api_key}'
+    query = 'subject:fiction'
+    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&key={api_key}&maxResults=40'
     response = requests.get(url)
     books = response.json()
     
-    genres = set()
-    authors = set()
-    for item in books.get('items', []):
-        volume_info = item.get('volumeInfo', {})
-        categories = volume_info.get('categories', [])
-        for category in categories:
-            genres.add(category)
-        book_authors = volume_info.get('authors', [])
-        for author in book_authors:
-            authors.add(author)
+    all_books = books.get('items', [])
+    all_authors = fetch_authors()
+    all_genres = fetch_genres()
     
-    return render_template('get_started.html', genres=sorted(genres), authors=sorted(authors), books=books.get('items', []))
+    return render_template('get_started.html', genres=sorted(all_genres), authors=sorted(all_authors), books=all_books)
 
 @main_routes.route('/get_books')
 def get_books():
@@ -35,8 +55,15 @@ def get_books():
     genre = request.args.get('genre')
     language = request.args.get('langRestrict')
     api_key = os.getenv('GOOGLE_BOOKS_API_KEY')
-    query = f'inauthor:{author}+subject:{genre}'
-    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&langRestrict={language}&key={api_key}'
+    
+    query_parts = []
+    if author and author != 'all':
+        query_parts.append(f'inauthor:{author}')
+    if genre and genre != 'all':
+        query_parts.append(f'subject:{genre}')
+    query = '+'.join(query_parts) if query_parts else '*'
+    
+    url = f'https://www.googleapis.com/books/v1/volumes?q={query}&langRestrict={language if language != "all" else ""}&key={api_key}'
     response = requests.get(url)
     books = response.json()
     return jsonify(books)
