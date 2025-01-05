@@ -1,32 +1,89 @@
+<!-- filepath: /c:/Users/decroosb/Downloads/BookApp/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        main {
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        label, select, button {
+            display: block;
+            margin: 10px 0;
+        }
+        #books {
+            margin-top: 20px;
+        }
+        .book {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        .book h2 {
+            margin: 0;
+            color: #333;
+        }
+        .book p {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-    <h1>Book Data</h1>
-    <div id="books"></div>
+    <header>
+        <h1>Book Data</h1>
+    </header>
+    <main>
+        <label for="author">Choose an author:</label>
+        <select id="author">
+            <option value="Roald Dahl">Roald Dahl</option>
+            <option value="J.K. Rowling">J.K. Rowling</option>
+            <option value="George Orwell">George Orwell</option>
+        </select>
+        <button id="fetchBooks">Fetch Books</button>
+        <div id="books"></div>
+    </main>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            fetch('/books')
-                .then(response => response.json())
-                .then(data => {
-                    const booksDiv = document.getElementById('books');
-                    data.items.forEach(item => {
-                        const book = item.volumeInfo;
-                        const bookDiv = document.createElement('div');
-                        bookDiv.innerHTML = `
-                            <h2>${book.title}</h2>
-                            <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
-                            <p>Page Count: ${book.pageCount || 'N/A'}</p>
-                            <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
-                            <hr>
-                        `;
-                        booksDiv.appendChild(bookDiv);
+            document.getElementById('fetchBooks').addEventListener('click', () => {
+                const author = document.getElementById('author').value;
+                fetch(`/books?author=${encodeURIComponent(author)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const booksDiv = document.getElementById('books');
+                        booksDiv.innerHTML = ''; // Clear previous results
+                        data.items.forEach(item => {
+                            const book = item.volumeInfo;
+                            const bookDiv = document.createElement('div');
+                            bookDiv.classList.add('book');
+                            bookDiv.innerHTML = `
+                                <h2>${book.title}</h2>
+                                <p>Author: ${book.authors ? book.authors.join(', ') : 'N/A'}</p>
+                                <p>Page Count: ${book.pageCount || 'N/A'}</p>
+                                <p>ISBN: ${book.industryIdentifiers ? book.industryIdentifiers[0].identifier : 'N/A'}</p>
+                            `;
+                            booksDiv.appendChild(bookDiv);
+                        });
                     });
-                });
+            });
         });
     </script>
 </body>
